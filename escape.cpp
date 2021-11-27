@@ -138,11 +138,12 @@ MyGrid escape(MyGrid grid) {
          size_t t_cost_d;
          // neighbors of the standing tile
          // checking thr right neighbor
-         if (grid(standing_row + 1, standing_col) == Floor && !visited[standing_row + 1][standing_col]) {
+         if (grid(standing_row, standing_col+1) == Floor && !visited[standing_row + 1][standing_col]) {
              
-             size_t rightneighbor_row = standing_row + 1;
-             size_t rightneighbor_col = standing_col;
+             size_t rightneighbor_row = standing_row;
+             size_t rightneighbor_row = standing_col +1;
              size_t t_cost_r = abs(rightneighbor_row - exit_row) + abs(rightneighbor_col - exit_col) + abs(rightneighbor_row - 1) + abs(rightneighbor_col - 1);
+             cost2darray[rightneighbor_row][rightneighbor_row] = t_cost_r;
              if (t_cost_r < t_cost_min) {
                  minneighbor_row = rightneighbor_row;
                  minneighbor_col = rightneighbor_col;
@@ -150,11 +151,12 @@ MyGrid escape(MyGrid grid) {
              }
          }
          // checking the left neighbor
-         if (grid(standing_row - 1, standing_col) == Floor && !visited[standing_row - 1][standing_col]) {
+         if (grid(standing_row, standing_col-1) == Floor && !visited[standing_row - 1][standing_col]) {
              
-             size_t leftneighbor_row = standing_row - 1;
-             size_t leftneighbor_col = standing_col;
+             size_t leftneighbor_row = standing_row;
+             size_t leftneighbor_col = standing_col-1;
              size_t t_cost_l = abs(leftneighbor_row - exit_row) + abs(leftneighbor_col - exit_col) + abs(leftneighbor_row - 1) + abs(leftneighbor_col - 1);
+             cost2darray[leftneighbor_row][leftneighbor_row] = t_cost_l;
              if (t_cost_l < t_cost_min) {
                  minneighbor_row = leftneighbor_row;
                  minneighbor_col = leftneighbor_col;
@@ -162,11 +164,12 @@ MyGrid escape(MyGrid grid) {
              }
          }
          // checking top neighbor
-         if (grid(standing_row, standing_col - 1) == Floor && !visited[standing_row][standing_col - 1]) {
+         if (grid(standing_row-1, standing_col) == Floor && !visited[standing_row][standing_col - 1]) {
              
-             size_t topneighbor_row = standing_row;
-             size_t topneighbor_col = standing_col - 1;
+             size_t topneighbor_row = standing_row-1;
+             size_t topneighbor_col = standing_col;
              size_t t_cost_t = abs(topneighbor_row - exit_row) + abs(topneighbor_col - exit_col) + abs(topneighbor_row - 1) + abs(topneighbor_col - 1);
+             cost2darray[topneighbor_row][topneighbor_row] = t_cost_t;
              if (t_cost_t < t_cost_min) {
                  minneighbor_row = topneighbor_row;
                  minneighbor_col = topneighbor_col;
@@ -176,9 +179,10 @@ MyGrid escape(MyGrid grid) {
          // checking down neighbor
          if (grid(standing_row, standing_col + 1) == Floor && !visited[standing_row][standing_col + 1]) {
              
-             size_t downneighbor_row = standing_row;
-             size_t downneighbor_col = standing_col + 1;
+             size_t downneighbor_row = standing_row +1;
+             size_t downneighbor_col = standing_col;
              size_t t_cost_d = abs(downneighbor_row - exit_row) + abs(downneighbor_col - exit_col) + abs(downneighbor_row - 1) + abs(downneighbor_col - 1);
+             cost2darray[downneighbor_row][downneighbor_row] = t_cost_d;
              if (t_cost_d < t_cost_min) {
                  minneighbor_row = downneighbor_row;
                  minneighbor_col = downneighbor_col;
