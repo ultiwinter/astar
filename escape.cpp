@@ -54,6 +54,8 @@ MyGrid escape(MyGrid grid) {
              }
          }
      }
+
+
      // making boolen visited array
      bool** visited = new bool*[grid.rows()];
      for (size_t i = 0; i < grid.rows(); i++) {
@@ -120,8 +122,8 @@ MyGrid escape(MyGrid grid) {
          }
 
 
-         size_t minneighbor_row;
-         size_t minneighbor_col;
+         size_t minneighbor_row; // the row of the neighbor with the minimum cost
+         size_t minneighbor_col; // the column of the neighbor with the minimum cost
          size_t t_cost_min = 99999;
          size_t e_cost_min;
 
@@ -137,9 +139,11 @@ MyGrid escape(MyGrid grid) {
          size_t downneighbor_row;
          size_t downneighbor_col;
          size_t t_cost_d;
+
+
          // neighbors of the standing tile
+
          // checking thr right neighbor
-         
          if (grid(standing_row, standing_col+1) == Floor && grid.validPosition(standing_row, standing_col + 1)) {
              
              rightneighbor_row = standing_row;
@@ -200,6 +204,8 @@ MyGrid escape(MyGrid grid) {
          standing_row = minneighbor_row;
          standing_col = minneighbor_col;
 
+
+         // Checking if path is found
          if (standing_row == exit_row && standing_col == exit_col && e_cost_min == 0) {
              found = true;
              grid(standing_row, standing_col) = Path;
@@ -215,29 +221,32 @@ MyGrid escape(MyGrid grid) {
                  // checking top neighbor
                  if (grid(standing_row -1, standing_col) == Floor) {
                      tcost = cost2darray[standing_row - 1][standing_col];
-                     if (mincost < tcost)
+                     if (mincost > tcost)
                          mincost = tcost;
                  }
 
                  // checking down neighbor
                  if (grid(standing_row + 1, standing_col) == Floor) {
                      dcost = cost2darray[standing_row + 1][standing_col];
-                     if (mincost < dcost)
+                     if (mincost > dcost)
                          mincost = dcost;
                  }
                  // checking right neighbor
                  if (grid(standing_row, standing_col+1) == Floor) {
                      rcost = cost2darray[standing_row][standing_col+1];
-                     if (mincost < rcost)
+                     if (mincost > rcost)
                          mincost = rcost;
                  }
                  // checking left neighbor
                  if (grid(standing_row, standing_col-1) == Floor) {
                      lcost = cost2darray[standing_row][standing_col-1];
-                     if (mincost < lcost)
+                     if (mincost > lcost)
                          mincost = lcost;
                  }
 
+
+
+                 //assigning the Path to the tile with the minimum total cost
                  if (mincost == tcost) {
                      grid(standing_row - 1, standing_col) == Path;
                      standing_row = standing_row - 1;
