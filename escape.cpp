@@ -69,14 +69,36 @@ MyGrid escape(MyGrid grid) {
      }
 
      // making cost array
-     size_t** cost2darray = new size_t* [grid.rows()];
+     size_t** tcost2darray = new size_t* [grid.rows()];
      for (size_t i = 0; i < grid.rows(); i++) {
-         cost2darray[i] = new size_t[grid.cols()];
+         tcost2darray[i] = new size_t[grid.cols()];
      }
      // fillig the visited array with an arbitrary high number
      for (size_t i = 0; i < grid.rows(); i++) {
          for (size_t j = 0; j < grid.cols(); j++) {
-             cost2darray[i][j] = 99999;
+             tcost2darray[i][j] = 99999;
+         }
+     }
+
+     size_t** ecost2darray = new size_t * [grid.rows()];
+     for (size_t i = 0; i < grid.rows(); i++) {
+         ecost2darray[i] = new size_t[grid.cols()];
+     }
+     // fillig the visited array with an arbitrary high number
+     for (size_t i = 0; i < grid.rows(); i++) {
+         for (size_t j = 0; j < grid.cols(); j++) {
+             ecost2darray[i][j] = 99999;
+         }
+     }
+
+     size_t** hcost2darray = new size_t * [grid.rows()];
+     for (size_t i = 0; i < grid.rows(); i++) {
+         hcost2darray[i] = new size_t[grid.cols()];
+     }
+     // fillig the visited array with an arbitrary high number
+     for (size_t i = 0; i < grid.rows(); i++) {
+         for (size_t j = 0; j < grid.cols(); j++) {
+             hcost2darray[i][j] = 99999;
          }
      }
      // making row of parent point array
@@ -118,7 +140,7 @@ MyGrid escape(MyGrid grid) {
      size_t h_cost = 0; // distance from current to start (first position)
      size_t e_cost= abs(exit_row - 1) + abs(exit_col - 1); // distance from current to exit
      size_t t_cost = h_cost + e_cost; // total cost
-     cost2darray[1][1] = t_cost;
+     tcost2darray[1][1] = t_cost;
 
      bool found = false;
      while (found) {
@@ -147,20 +169,28 @@ MyGrid escape(MyGrid grid) {
          size_t minneighbor_row; // the row of the neighbor with the minimum cost
          size_t minneighbor_col; // the column of the neighbor with the minimum cost
          size_t t_cost_min = 99999;
-         size_t e_cost_min;
+         size_t e_cost_min = 99999;
 
          // rows, columns, and cost variables for every neighbor
          size_t rightneighbor_row;
          size_t rightneighbor_col;
+         size_t h_cost_r;
+         size_t e_cost_r;
          size_t t_cost_r; // total cost for right neighbor
          size_t leftneighbor_row;
          size_t leftneighbor_col;
+         size_t h_cost_l;
+         size_t e_cost_l;
          size_t t_cost_l; // total cost for left neighbor
          size_t topneighbor_row;
          size_t topneighbor_col;
+         size_t h_cost_t;
+         size_t e_cost_t;
          size_t t_cost_t; // total cost for top neighbor
          size_t downneighbor_row;
          size_t downneighbor_col;
+         size_t h_cost_d;
+         size_t e_cost_d;
          size_t t_cost_d; // total cost for bottom neighbor
 
          int c = 0;
@@ -169,12 +199,16 @@ MyGrid escape(MyGrid grid) {
 
          // checking thr right neighbor
          if (grid(standing_row, standing_col+1) == Floor && grid.validPosition(standing_row, standing_col + 1) && !visited[standing_row][standing_col + 1]) {
-             visited[standing_row][standing_col + 1] = true;
+             
              rightneighbor_row = standing_row;
              rightneighbor_row = standing_col +1;
              t_cost_r = abs(rightneighbor_row - exit_row) + abs(rightneighbor_col - exit_col) + abs(rightneighbor_row - 1) + abs(rightneighbor_col - 1);
-             cost2darray[rightneighbor_row][rightneighbor_row] = t_cost_r;
-             if (t_cost_r < t_cost_min) {
+             e_cost_r = abs(rightneighbor_row - exit_row) + abs(rightneighbor_col - exit_col);
+             h_cost_r = abs(rightneighbor_row - 1) + abs(rightneighbor_col - 1);
+             hcost2darray[standing_row][standing_col + 1] = h_cost_r;
+             ecost2darray[standing_row][standing_col + 1] = e_cost_r;
+             tcost2darray[rightneighbor_row][rightneighbor_row] = t_cost_r;
+             if (e_cost_r < e_cost_min) {
                  minneighbor_row = rightneighbor_row;
                  minneighbor_col = rightneighbor_col;
                  t_cost_min = t_cost_r;
@@ -186,120 +220,169 @@ MyGrid escape(MyGrid grid) {
          }
          // checking the left neighbor
          if (grid(standing_row, standing_col-1) == Floor && grid.validPosition(standing_row,standing_col-1) && !visited[standing_row][standing_col - 1]) {
-             visited[standing_row][standing_col - 1] = true;
+             
              leftneighbor_row = standing_row;
              leftneighbor_col = standing_col-1;
              t_cost_l = abs(leftneighbor_row - exit_row) + abs(leftneighbor_col - exit_col) + abs(leftneighbor_row - 1) + abs(leftneighbor_col - 1);
-             cost2darray[leftneighbor_row][leftneighbor_row] = t_cost_l;
-             if (t_cost_l < t_cost_min) {
+             e_cost_l = abs(leftneighbor_row - exit_row) + abs(leftneighbor_col - exit_col);
+             h_cost_l = abs(leftneighbor_row - 1) + abs(leftneighbor_col - 1);
+             hcost2darray[standing_row][standing_col - 1] = h_cost_l;
+             ecost2darray[standing_row][standing_col - 1] = e_cost_l;
+             tcost2darray[leftneighbor_row][leftneighbor_row] = t_cost_l;
+             if (e_cost_l < e_cost_min) {
                  minneighbor_row = leftneighbor_row;
                  minneighbor_col = leftneighbor_col;
                  t_cost_min = t_cost_l;
                  e_cost_min = abs(exit_row - leftneighbor_row) + abs(exit_col - leftneighbor_col);
-                 c = 1;
+                 c = 2;
              }
              rowparentarray[leftneighbor_row][leftneighbor_col] = standing_row;
              colparentarray[leftneighbor_row][leftneighbor_col] = standing_col;
          }
          // checking top neighbor
          if (grid(standing_row-1, standing_col) == Floor && grid.validPosition(standing_row-1, standing_col) && !visited[standing_row-1][standing_col]) {
-             visited[standing_row-1][standing_col] = true;
+             
              topneighbor_row = standing_row-1;
              topneighbor_col = standing_col;
              t_cost_t = abs(topneighbor_row - exit_row) + abs(topneighbor_col - exit_col) + abs(topneighbor_row - 1) + abs(topneighbor_col - 1);
-             cost2darray[topneighbor_row][topneighbor_row] = t_cost_t;
-             if (t_cost_t < t_cost_min) {
+             e_cost_t = abs(topneighbor_row - exit_row) + abs(topneighbor_col - exit_col);
+             h_cost_t = abs(topneighbor_row - 1) + abs(topneighbor_col - 1);
+             hcost2darray[standing_row-1][standing_col] = h_cost_t;
+             ecost2darray[standing_row-1][standing_col] = e_cost_t;
+             tcost2darray[topneighbor_row][topneighbor_row] = t_cost_t;
+             if (e_cost_t < e_cost_min) {
                  minneighbor_row = topneighbor_row;
                  minneighbor_col = topneighbor_col;
                  t_cost_min = t_cost_t;
                  e_cost_min = abs(exit_row - topneighbor_row) + abs(exit_col - topneighbor_col);
-                 c = 1;
+                 c = 3;
              }
              rowparentarray[topneighbor_row][topneighbor_col] = standing_row;
              colparentarray[topneighbor_row][topneighbor_col] = standing_col;
          }
          // checking down neighbor
          if (grid(standing_row+1, standing_col) == Floor && grid.validPosition(standing_row+1, standing_col) && !visited[standing_row+1][standing_col]) {
-             visited[standing_row+1][standing_col] = true;
+             
              downneighbor_row = standing_row +1;
              downneighbor_col = standing_col;
              t_cost_d = abs(downneighbor_row - exit_row) + abs(downneighbor_col - exit_col) + abs(downneighbor_row - 1) + abs(downneighbor_col - 1);
-             cost2darray[downneighbor_row][downneighbor_row] = t_cost_d;
-             if (t_cost_d < t_cost_min) {
+             e_cost_d = abs(downneighbor_row - exit_row) + abs(downneighbor_col - exit_col);
+             h_cost_t = abs(topneighbor_row - 1) + abs(topneighbor_col - 1);
+             hcost2darray[standing_row + 1][standing_col] = h_cost_d;
+             ecost2darray[standing_row + 1][standing_col] = e_cost_t;
+             tcost2darray[downneighbor_row][downneighbor_row] = t_cost_d;
+             if (e_cost_d < e_cost_min) {
                  minneighbor_row = downneighbor_row;
                  minneighbor_col = downneighbor_col;
                  t_cost_min = t_cost_d;
                  e_cost_min = abs(exit_row - downneighbor_row) + abs(exit_col - downneighbor_col);
-                 c = 1;
+                 c = 4;
              }
              rowparentarray[downneighbor_row][downneighbor_col] = standing_row;
              colparentarray[downneighbor_row][downneighbor_col] = standing_col;
          }
          
          // if change happened, jump to the next point. if not, return to the parent point and start again
-         if (c==1) {
-             standing_row = minneighbor_row;
-             standing_col = minneighbor_col;
-         }
-         else {
+         if (c == 0) {
              standing_row, standing_col = rowparentarray[standing_row][standing_col], colparentarray[standing_row][standing_col];
              continue;
          }
+         else if (c==1) {
+             visited[standing_row][standing_col + 1] = true;
+             standing_row = minneighbor_row;
+             standing_col = minneighbor_col;
+         }
+         else if (c == 2) {
+             visited[standing_row][standing_col - 1] = true;
+             standing_row = minneighbor_row;
+             standing_col = minneighbor_col;
+         }
+         else if (c == 3) {
+             visited[standing_row - 1][standing_col] = true;
+             standing_row = minneighbor_row;
+             standing_col = minneighbor_col;
+         }
+         else if (c == 4) {
+             visited[standing_row + 1][standing_col] = true;
+             standing_row = minneighbor_row;
+             standing_col = minneighbor_col;
+         }
+         
          
 
 
          // Checking if path is found
-         if (standing_row == exit_row && standing_col == exit_col && e_cost_min == 0) {
-             found = true;
+         if (standing_row == exit_row && standing_col == exit_col) {
+             
              grid(standing_row, standing_col) = Path;
-
 
              // drawing the path on the grid
              while (grid(1, 1) == Path) {
-                 size_t mincost = 99999999;
+                 size_t max_h_cost = 0;
                  size_t tcost;
+                 size_t tcost_e;
                  size_t dcost;
+                 size_t dcost_e;
                  size_t rcost;
+                 size_t rcost_e;
                  size_t lcost;
+                 size_t lcost_e;
+                 int c = 0;
                  // checking top neighbor
-                 if (grid(standing_row -1, standing_col) == Floor && grid.validPosition(standing_row - 1, standing_col)) {
-                     tcost = cost2darray[standing_row - 1][standing_col];
-                     if (mincost > tcost)
-                         mincost = tcost;
+                 if (grid(standing_row -1, standing_col) == Floor && grid.validPosition(standing_row - 1, standing_col) && visited[standing_row - 1][standing_col]) {
+                     tcost = tcost2darray[standing_row - 1][standing_col];
+                     tcost_e = ecost2darray[standing_row - 1][standing_col];
+                     if (max_h_cost > tcost_e){ 
+                         max_h_cost = tcost_e;
+                         c = 1;
+                     }
+
                  }
 
                  // checking down neighbor
-                 if (grid(standing_row + 1, standing_col) == Floor && grid.validPosition(standing_row + 1, standing_col)) {
-                     dcost = cost2darray[standing_row + 1][standing_col];
-                     if (mincost > dcost)
-                         mincost = dcost;
+                 if (grid(standing_row + 1, standing_col) == Floor && grid.validPosition(standing_row + 1, standing_col) && visited[standing_row + 1][standing_col]) {
+                     dcost = tcost2darray[standing_row + 1][standing_col];
+                     dcost_e = ecost2darray[standing_row + 1][standing_col];
+                     if (max_h_cost < dcost_e) {
+                         max_h_cost = dcost_e;
+                         c = 2;
+                     }
+                         
                  }
                  // checking right neighbor
-                 if (grid(standing_row, standing_col+1) == Floor && grid.validPosition(standing_row, standing_col + 1)) {
-                     rcost = cost2darray[standing_row][standing_col+1];
-                     if (mincost > rcost)
-                         mincost = rcost;
+                 if (grid(standing_row, standing_col+1) == Floor && grid.validPosition(standing_row, standing_col + 1) && visited[standing_row][standing_col+1]) {
+                     rcost = tcost2darray[standing_row][standing_col+1];
+                     rcost_e = ecost2darray[standing_row][standing_col+1];
+                     if (max_h_cost < rcost_e) {
+                         max_h_cost = rcost_e;
+                         c = 3;
+                     }
+                         
                  }
                  // checking left neighbor
-                 if (grid(standing_row, standing_col-1) == Floor && grid.validPosition(standing_row, standing_col - 1)) {
-                     lcost = cost2darray[standing_row][standing_col-1];
-                     if (mincost > lcost)
-                         mincost = lcost;
+                 if (grid(standing_row, standing_col-1) == Floor && grid.validPosition(standing_row, standing_col - 1) && visited[standing_row][standing_col-1]) {
+                     lcost = tcost2darray[standing_row][standing_col-1];
+                     lcost_e = ecost2darray[standing_row ][standing_col - 1];
+                     if (max_h_cost < lcost_e)
+                     {
+                         max_h_cost = lcost_e;
+                         c = 4;
+                     }
+                         
                  }
-
 
 
                  //assigning the Path to the tile with the minimum total cost
-                 if (mincost == tcost) {
+                 if (c==1) {
                      grid(standing_row - 1, standing_col) == Path;
                      standing_row = standing_row - 1;
 
                  }
-                 else if (mincost == dcost) {
+                 else if (c==2) {
                      grid(standing_row + 1, standing_col) == Path;
                      standing_row = standing_row + 1;
                  }
-                 else if (mincost == rcost) {
+                 else if (c==3) {
                      grid(standing_row, standing_col + 1) == Path;
                      standing_col = standing_col + 1;
                  }
@@ -310,6 +393,7 @@ MyGrid escape(MyGrid grid) {
                  }
              }
 
+             found = true;
          }
          
              
@@ -319,10 +403,19 @@ MyGrid escape(MyGrid grid) {
      // deleting the visited and costs 2d arrays
      for (size_t i = 0; i < grid.rows(); i++) {
          delete[] visited[i];
-         delete[] cost2darray[i];
+         delete[] tcost2darray[i];
+         delete[] ecost2darray[i];
+         delete[] hcost2darray[i];
+         delete[] rowparentarray[i];
+         delete[] colparentarray[i];
+
      }
      delete[] visited;
-     delete[] cost2darray;
+     delete[] tcost2darray;
+     delete[] ecost2darray;
+     delete[] hcost2darray;
+     delete[] rowparentarray;
+     delete[] colparentarray;
 
 
     return grid;
